@@ -1,0 +1,354 @@
+kiosk_mode:
+  non_admin_settings:
+    kiosk: true
+    ignore_entity_settings: true
+  entity_settings:
+    - entity:
+        input_boolean.kiosk_mode: 'on'
+      hide_header: true
+    - entity:
+        input_boolean.kiosk_mode: 'off'
+      hide_header: false
+button_card_templates:
+  room:
+    aspect_ratio: 3/3
+    state:
+      - value: 'off'
+        styles:
+          name:
+            - font-size: 13px
+            - padding-top: 7px
+          card:
+            - padding-bottom: 15%
+            - padding-top: 15%
+            - filter: opacity(100%)
+      - value: 'on'
+        color: '#5bc68e'
+        styles:
+          card:
+            - padding-bottom: 15%
+            - padding-top: 15%
+            - filter: opacity(100%)
+          name:
+            - font-size: 13px
+            - padding-top: 7px
+    double_tap_action:
+      action: toggle
+    hold_action:
+      action: toggle
+  light:
+    show_state: false
+    styles:
+      state:
+        - font-size: 11px
+        - padding-top: 3%
+    aspect_ratio: 3/3
+    state:
+      - value: 'off'
+        styles:
+          name:
+            - font-size: 13px
+            - padding-top: 7px
+          card:
+            - padding-bottom: 15%
+            - padding-top: 15%
+            - filter: opacity(100%)
+          icon:
+            - width: 60px
+            - height: 60px
+      - value: 'on'
+        color: '#5bc68e'
+        styles:
+          icon:
+            - width: 60px
+            - height: 60px
+          card:
+            - padding-bottom: 15%
+            - padding-top: 15%
+            - filter: opacity(100%)
+          name:
+            - font-size: 13px
+            - padding-top: 7px
+    tap_action:
+      action: toggle
+views:
+  - theme: Backend-selected
+    title: Home
+    icon: mdi:home
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: tile
+            entity: alarm_control_panel.hjemme
+            name: Alarm
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-home/alarm
+            features:
+              - type: alarm-modes
+                modes:
+                  - armed_home
+                  - armed_away
+                  - armed_night
+                  - disarmed
+          - type: conditional
+            conditions:
+              - entity: binary_sensor.posten_binary_sensor
+                state: 'on'
+            card:
+              type: custom:mushroom-template-card
+              primary: ''
+              secondary: Post {{ states('sensor.posten_sensor_next') }}
+              icon: ''
+              entity: sensor.posten_sensor
+          - type: custom:vertical-stack-in-card
+            cards:
+              - type: horizontal-stack
+                cards:
+                  - type: custom:button-card
+                    template: room
+                    entity: light.living_room_lights
+                    icon: mdi:sofa
+                    name: >-
+                      [[[ return `
+                      ${states['sensor.living_room_motion_sensor_temperature'].state}°C`
+                      ]]]
+                    tap_action:
+                      action: navigate
+                      navigation_path: /lovelace-home/stue
+                  - type: custom:button-card
+                    entity: light.office_lights
+                    template: room
+                    name: >-
+                      [[[ return `
+                      ${states['sensor.office_temperature_temperature'].state}°C`
+                      ]]]
+                    icon: phu:rooms-office
+                    tap_action:
+                      action: navigate
+                      navigation_path: /lovelace-home/kontor
+                  - type: custom:button-card
+                    template: room
+                    entity: switch.switch_bedroom_lights
+                    name: >-
+                      [[[ return `
+                      ${states['sensor.bedroom_temperature_temperature'].state}°C`
+                      ]]]
+                    icon: mdi:bed
+                    tap_action:
+                      action: navigate
+                      navigation_path: /lovelace-home/soverom
+                  - type: custom:button-card
+                    template: room
+                    entity: sensor.kitchen_temperature_temperature
+                    name: >-
+                      [[[ return `
+                      ${states['sensor.kitchen_temperature_temperature'].state}°C`
+                      ]]]
+                    icon: mdi:silverware-fork-knife
+                    styles:
+                      name:
+                        - font-size: 13px
+                        - padding-bottom: 10%
+                    tap_action:
+                      action: navigate
+                      navigation_path: /lovelace-home/kitchen
+              - type: horizontal-stack
+                cards:
+                  - type: custom:button-card
+                    template: room
+                    icon: phu:rooms-bathroom
+                    entity: switch.washerdryer
+                    name: >-
+                      [[[ return `
+                      ${states['sensor.bathroom_temperature_temperature'].state}°C`
+                      ]]]
+                    tap_action:
+                      action: navigate
+                      navigation_path: /lovelace-home/bad
+                  - type: custom:button-card
+                    template: room
+                    entity: switch.entrance_light_switch
+                    name: >-
+                      [[[ return `
+                      ${states['sensor.entrance_temperature_temperature'].state}°C`
+                      ]]]
+                    icon: phu:rooms-hallway
+                    tap_action:
+                      action: navigate
+                      navigation_path: /lovelace-home/hallway
+                  - type: custom:button-card
+                    template: room
+                    entity: light.storage_room_light
+                    name: Bod
+                    icon: mdi:archive
+                    tap_action:
+                      action: navigate
+                      navigation_path: /lovelace-home/storage-room
+                  - type: custom:button-card
+                    template: room
+                    entity: light.patio_light
+                    name: >-
+                      [[[ return `
+                      ${states['weather.forecast_home'].attributes.temperature}°C`
+                      ]]]
+                    icon: mdi:light-flood-down
+                    tap_action:
+                      action: navigate
+                      navigation_path: /lovelace-home/patio
+          - type: custom:vertical-stack-in-card
+            cards:
+              - type: custom:swipe-card
+                start_card: 1
+                cards:
+                  - type: horizontal-stack
+                    cards:
+                      - type: custom:button-card
+                        entity: input_boolean.pause_motion_sensors
+                        show_name: false
+                        aspect_ratio: 9/3
+                        state:
+                          - value: 'off'
+                            icon: mdi:motion-sensor
+                            styles:
+                              card:
+                                - padding-bottom: 5%
+                                - padding-top: 5%
+                          - value: 'on'
+                            color: red
+                            icon: mdi:motion-sensor-off
+                            styles:
+                              icon:
+                                - width: 60px
+                                - height: 60px
+                              card:
+                                - padding-bottom: 5%
+                                - padding-top: 5%
+                        tap_action:
+                          action: toggle
+                      - type: custom:button-card
+                        entity: input_boolean.stop_automations
+                        show_name: false
+                        aspect_ratio: 9/3
+                        state:
+                          - value: 'off'
+                            icon: mdi:stop-circle
+                            styles:
+                              card:
+                                - padding-bottom: 5%
+                                - padding-top: 5%
+                          - value: 'on'
+                            color: red
+                            icon: mdi:stop-circle
+                            styles:
+                              card:
+                                - padding-bottom: 5%
+                                - padding-top: 5%
+                        tap_action:
+                          action: toggle
+                      - type: custom:button-card
+                        show_name: false
+                        aspect_ratio: 9/3
+                        icon: mdi:list-box
+                        styles:
+                          card:
+                            - padding-bottom: 5%
+                            - padding-top: 5%
+                        tap_action:
+                          action: navigate
+                          navigation_path: /lovelace-home/shopping-list
+                  - type: horizontal-stack
+                    cards:
+                      - type: custom:button-card
+                        show_name: false
+                        aspect_ratio: 9/3
+                        icon: mdi:help-network
+                        styles:
+                          card:
+                            - padding-bottom: 5%
+                            - padding-top: 5%
+                        tap_action:
+                          action: navigate
+                          navigation_path: /lovelace-home/helpers
+                      - type: custom:button-card
+                        show_name: false
+                        aspect_ratio: 9/3
+                        icon: phu:tesla-icon
+                        styles:
+                          card:
+                            - padding-bottom: 5%
+                            - padding-top: 5%
+                        tap_action:
+                          action: navigate
+                          navigation_path: /lovelace-home/tesla
+                      - type: custom:button-card
+                        entity: input_boolean.kiosk_mode
+                        show_name: false
+                        aspect_ratio: 9/3
+                        state:
+                          - value: 'off'
+                            icon: mdi:cog
+                            styles:
+                              card:
+                                - padding-bottom: 5%
+                                - padding-top: 5%
+                          - value: 'on'
+                            color: '#5bc68e'
+                            icon: mdi:cog
+                            styles:
+                              card:
+                                - padding-bottom: 5%
+                                - padding-top: 5%
+                        tap_action:
+                          action: toggle
+          - type: custom:swipe-card
+            start_card: 1
+            parameters:
+              effect: coverflow
+              grabCursor: true
+              centeredSlides: true
+              slidesPerView: auto
+              coverflowEffect:
+                rotate: 50
+                stretch: 0
+                depth: 100
+                modifier: 1
+                slideShadows: true
+              pagination: null
+              type: bullets
+            cards:
+              - type: custom:mini-graph-card
+                name: Gjennomsnitt
+                icon: mdi:thermometer
+                hour24: true
+                entities:
+                  - sensor.average_temperature
+                line_color: '#5bc68e'
+                line_width: 8
+                font_size: 75
+              - type: custom:mini-graph-card
+                name: Gjennomsnitt
+                icon: mdi:water-check
+                hour24: true
+                entities:
+                  - sensor.averagehumidity
+                line_color: var(--accent-color)
+                line_width: 8
+                font_size: 75
+          - type: conditional
+            conditions:
+              - entity: sensor.low_battery_devices
+                state_not: unavailable
+            card:
+              type: markdown
+              content: '{{states(''sensor.low_battery_devices'')}}'
+              title: Lave batterier
+          - type: conditional
+            conditions:
+              - entity: sensor.which_doors_are_open
+                state_not: Ingen
+            card:
+              type: markdown
+              content: '{{states(''sensor.which_doors_are_open'')}}'
+              title: 'Åpne dører:'
